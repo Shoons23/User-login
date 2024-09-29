@@ -3,30 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Login and Signup</title>
 </head>
 <body>
     <h2>Login</h2>
     <form id="loginForm">
         <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br>
+        <input type="text" id="loginUsername" name="username" required><br>
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Submit">
+        <input type="password" id="loginPassword" name="password" required><br><br>
+        <input type="submit" value="Login">
     </form>
 
+    <div id="loginResult"></div> <!-- 로그인 결과 표시 -->
+
+    <h2>Signup</h2>
+    <form id="signupForm">
+        <label for="newUsername">Username:</label><br>
+        <input type="text" id="signupUsername" name="username" required><br>
+        <label for="newPassword">Password:</label><br>
+        <input type="password" id="signupPassword" name="password" required><br><br>
+        <input type="submit" value="Signup">
+    </form>
+
+    <div id="signupResult"></div> <!-- 회원가입 결과 표시 -->
+
     <script>
-    
+        // 로그인 처리
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            
-            console.log('Username:', username);
-            console.log('Password:', password);
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
 
             fetch('http://localhost:8080/login', {
                 method: 'POST',
@@ -35,11 +43,48 @@
                 },
                 body: JSON.stringify({ username: username, password: password })
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                console.log('Response from server:', data);
+                const loginResult = document.getElementById('loginResult');
+                if (data.status === "success") {
+                    loginResult.textContent = data.message;
+                    loginResult.style.color = "green";
+                } else {
+                    loginResult.textContent = data.message;
+                    loginResult.style.color = "red";
+                }
             })
-            .catch((error) => {
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // 회원가입 처리
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+
+            fetch('http://localhost:8080/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const signupResult = document.getElementById('signupResult');
+                if (data.status === "success") {
+                    signupResult.textContent = data.message;
+                    signupResult.style.color = "green";
+                } else {
+                    signupResult.textContent = data.message;
+                    signupResult.style.color = "red";
+                }
+            })
+            .catch(error => {
                 console.error('Error:', error);
             });
         });
